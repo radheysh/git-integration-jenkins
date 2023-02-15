@@ -64,7 +64,10 @@ public class FtiFileUploadController {
 		String absoluteFileName = fileStorageService.getAbsoluteFilePath(fileName);
 		TrackTraceResponse TrackTraceResponse = null;
 		try {
-			if (fileName.endsWith(".xlsx")) {
+			if (fileName.endsWith(".csv")) {
+				TrackTraceResponse = FileProcessor.processUploadedCsvFile(absoluteFileName, noOfLineToSkip,
+						noOfLinesToProcess,jwtUtils.getUserDetailsJwtToken(getHeaderKey(httpRequest, Constants.JWT_TOKEN_KEY)));
+			}else if (fileName.endsWith(".xlsx")) {
 				TrackTraceResponse = FileProcessor.processUploadedXLSxFile(absoluteFileName, noOfLineToSkip,
 						noOfLinesToProcess,jwtUtils.getUserDetailsJwtToken(getHeaderKey(httpRequest, Constants.JWT_TOKEN_KEY)));
 			} else {

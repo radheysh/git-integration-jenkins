@@ -54,7 +54,7 @@ public class UtilityMethods {
 	public String convertExcelDateToIso(String inputDate) {
 		String formattedDate = null;
 		try {
-			Date date = new SimpleDateFormat("dd-MMM-yyyy").parse(inputDate);
+			Date date = new SimpleDateFormat("dd-MM-yyyy").parse(inputDate);
 			formattedDate = new SimpleDateFormat("yyyy-MM-dd").format(date);
 			System.out.println(formattedDate);
 		} catch (ParseException e) {

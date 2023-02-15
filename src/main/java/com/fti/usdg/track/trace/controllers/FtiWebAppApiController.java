@@ -4,9 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,14 +30,13 @@ import com.fti.usdg.track.trace.repository.RoleRepository;
 import com.fti.usdg.track.trace.repository.UserGroupRepository;
 import com.fti.usdg.track.trace.repository.UserRepository;
 import com.fti.usdg.track.trace.security.jwt.JwtUtils;
-import com.fti.usdg.track.trace.security.services.UserDetailsImpl;
+
 import com.fti.usdg.track.trace.service.BusinessService;
 import com.fti.usdg.track.trace.common.UtilityMethods;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -60,25 +56,16 @@ public class FtiWebAppApiController {
 	BusinessService BusinessService = null;
 	@Autowired
 	private UtilityMethods UtilityMethods = null;
-
 	@Autowired
-	AuthenticationManager authenticationManager;
-
-	@Autowired
-	UserRepository userRepository;
-
+	private UserRepository userRepository;
 	@Autowired
 	UserGroupRepository userGroupRepository;
-
 	@Autowired
 	RoleRepository roleRepository;
-
 	@Autowired
 	PasswordEncoder encoder;
-
 	@Autowired
 	JwtUtils jwtUtils;
-	
 	@GetMapping("/whoami")
 	@ResponseBody
 	public TrackTraceResponse whoami(HttpServletRequest httpRequest) {
@@ -113,8 +100,11 @@ public class FtiWebAppApiController {
 		String swicthBackFTID = Constants.SWITCH_BACK_FTID;
 		if(LoggedInUserGroup.switchback!=null &&LoggedInUserGroup.switchback) {
 			swicthBackFTID="";
+			UserGroup = userGroupRepository.findByGroupName(User.getGroupName());
+		}else {
+			UserGroup = userGroupRepository.findByGroupName(LoggedInUserGroup.targetGroup);
 		}
-		UserGroup = userGroupRepository.findByGroupName(LoggedInUserGroup.targetGroup);
+		
 		jwt = jwtUtils.generateJwtTokenWithoutLogin(User.getUsername(), User.getUuid(), LoggedInUserGroup.targetGroup+Constants.HASH+UserGroup.getFeatureIds()+swicthBackFTID);
 		return ResponseEntity
 				.ok(new JwtResponse(jwt, User.getId(), User.getUsername(), User.getEmail(),

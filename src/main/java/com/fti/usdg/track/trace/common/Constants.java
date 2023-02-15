@@ -82,5 +82,6 @@ public class Constants {
 	public static final String USER_GROUP_SHIPPER = "USER_GROUP_SHIPPER_";
 	public static final String SWITCH_GROUP = "~FT_ID_18";
 	public static final String SWITCH_BACK_FTID = "~FT_ID_20";
+	public static final String SHIPMENT_DATA_BOL_NO = "SHIPMENT_DATA_BOL_NO_";
 
 }
