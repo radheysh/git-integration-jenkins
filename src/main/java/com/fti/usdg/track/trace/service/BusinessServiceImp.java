@@ -4,10 +4,10 @@
 package com.fti.usdg.track.trace.service;
 
 import java.util.ArrayList;
-
+ 
 import java.util.HashSet;
 import java.util.List;
-
+ 
 import java.util.Optional;
 import java.util.UUID;
 
@@ -49,7 +49,6 @@ import com.fti.usdg.track.trace.dto.LoggedInUserGroup;
 import com.fti.usdg.track.trace.dto.SaveLedgerRequest;
 import com.fti.usdg.track.trace.dto.SaveLedgerResponse;
 import com.fti.usdg.track.trace.dto.SearchParameters;
-import com.fti.usdg.track.trace.dto.SearchResultWrapper;
 import com.fti.usdg.track.trace.dto.ShipmentDataDto;
 import com.fti.usdg.track.trace.dto.ShipmentDataVersionsDto;
 import com.fti.usdg.track.trace.dto.UserDataHolder;
@@ -104,27 +103,12 @@ public class BusinessServiceImp implements BusinessService {
 	private PasswordEncoder encoder;
 
 	@Override
-	public TrackTraceResponse changePassword(UserDetailsDto user, String userUUIDJwtToken) {
-		TrackTraceResponse TrackTraceResponse = null;
-		if (user != null && user.getUuid() != null) {
-			User userEntity = userRepository.findByUuid(user.getUuid());
-			if (userEntity != null) {
-				userEntity.setPassword(encoder.encode(user.getNewPassword()));
-				userEntity.setLastLogin(UtilityMethods.getCurrentDate());
-				userRepository.save(userEntity);
-			}
-		}
-		TrackTraceResponse = new TrackTraceResponse(Constants.RESPONSE_CODE_200, "Password changed successfully.");
-		return TrackTraceResponse;
-	}
-
-	@Override
 	public TrackTraceResponse saveUser(UserDetailsDto UserDetails, String userUUID) {
 		TrackTraceResponse TrackTraceResponse = null;
 		Boolean userExists = false;
 		Integer NoOfUser = null;
 		if (UserDetails != null && UserDetails.getGroupName() != null && UserDetails.getUsername() != null
-				&& UserDetails.getEmail() != null && UserDetails.getUsername() != null && !UserDetails.getUsername().contains(" ")) {
+				&& UserDetails.getEmail() != null && UserDetails.getUsername() != null) {
 			UserGroup NewUserGroup = UserGroupRepository.findByGroupName(UserDetails.getGroupName());
 			if (NewUserGroup != null) {
 				NoOfUser = NewUserGroup.getNoOfUserAttached();
@@ -141,9 +125,6 @@ public class BusinessServiceImp implements BusinessService {
 					}
 					if (!userExists) {
 						String password = Constants.DEFAULT_PASSWORD;
-						if (UserDetails.getPassword() != null) {
-							password = UserDetails.getPassword();
-						}
 						User user = new User(UserDetails.getUsername(), UserDetails.getEmail(),
 								encoder.encode(password), UUID.randomUUID().toString(), UserDetails.getGroupName());
 						Set<Role> roles = new HashSet<>();
@@ -153,7 +134,7 @@ public class BusinessServiceImp implements BusinessService {
 						user.setRoles(roles);
 						user.setStatus(Constants.ACTIVE);
 						user.setUpdatedAt(UtilityMethods.getCurrentDate());
-						user.setUpdatedByValue(userUUID);
+						user.setUpdatedBy(userUUID);
 						userRepository.save(user);
 						++NoOfUser;
 					}
@@ -166,7 +147,7 @@ public class BusinessServiceImp implements BusinessService {
 						}
 						UserGroupFromDb.setNoOfUserAttached(UserGroupFromDb.getNoOfUserAttached() - 1);
 						UserGroupFromDb.setUpdatedAt(UtilityMethods.getCurrentDate());
-						UserGroupFromDb.setUpdatedByValue(userUUID);
+						UserGroupFromDb.setUpdatedBy(userUUID);
 						UserGroupRepository.save(UserGroupFromDb);
 					}
 					Optional<User> userFromDbOp = userRepository.findById(UserDetails.getId());
@@ -174,12 +155,9 @@ public class BusinessServiceImp implements BusinessService {
 					userFromDb.setEmail(UserDetails.getEmail());
 					userFromDb.setGroupName(UserDetails.getGroupName());
 					userFromDb.setUpdatedAt(UtilityMethods.getCurrentDate());
-					userFromDb.setUpdatedByValue(userUUID);
-					if (UserDetails.getStatus() != null) {
+					userFromDb.setUpdatedBy(userUUID);
+					if(UserDetails.getStatus()!=null) {
 						userFromDb.setStatus(Constants.ACTIVE);
-					}
-					if (UserDetails.getPassword() != null) {
-						userFromDb.setPassword(encoder.encode(UserDetails.getPassword()));
 					}
 					userRepository.save(userFromDb);
 					TrackTraceResponse = new TrackTraceResponse(Constants.RESPONSE_CODE_200,
@@ -293,15 +271,7 @@ public class BusinessServiceImp implements BusinessService {
 					pageable = PageRequest.of(searchCriteria.getPageNumber(), searchCriteria.getPerPage(),
 							Sort.by("updatedDate").descending());
 				}
-			} else if (searchCriteria.getSortKey() != null && searchCriteria.getSortKey().getSortType() != null) {
-				if (searchCriteria.getSortKey().getSortType().equalsIgnoreCase(Constants.DESC)) {
-					pageable = PageRequest.of(0, 20,
-							Sort.by(searchCriteria.getSortKey().getAttibName()).descending());
-				} else {
-					pageable = PageRequest.of(0, 20,
-							Sort.by(searchCriteria.getSortKey().getAttibName()).ascending());
-				}
-			}else {
+			} else {
 				pageable = PageRequest.of(0, 20, Sort.by("updatedDate").descending());
 			}
 			if (searchCriteria.getLookup().equalsIgnoreCase(Constants.SHIPMENT_DATA)) {
@@ -314,7 +284,7 @@ public class BusinessServiceImp implements BusinessService {
 						return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
 					}
 				};
-				TrackTraceResponse = FtiHelper.prepareResponseShipment(
+				TrackTraceResponse = FtiHelper.prepareResponse(
 						ShipmentDataRepository.findAll(Specification, pageable).getContent(),
 						ShipmentDataRepository.count(Specification));
 			} else if (searchCriteria.getLookup().equalsIgnoreCase(Constants.EXCEL_UPLOAD)) {
@@ -342,7 +312,7 @@ public class BusinessServiceImp implements BusinessService {
 						return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
 					}
 				};
-				TrackTraceResponse = FtiHelper.prepareShipdateResponse(
+				TrackTraceResponse = FtiHelper.prepareResponse(
 						UserGroupRepository.findAll(Specification, pageable).getContent(),
 						UserGroupRepository.count(Specification));
 			} else if (searchCriteria.getLookup().equalsIgnoreCase(Constants.USER_LIST)) {
@@ -471,58 +441,17 @@ public class BusinessServiceImp implements BusinessService {
 	public TrackTraceResponse searchShipmentData(SearchParameters searchCriteria, String userGroup) {
 		logger.debug("Entering into searchShipmentData");
 		searchCriteria.setLookup(Constants.SHIPMENT_DATA);
-		UserGroup UserGroup = UserGroupRepository.findByGroupName(userGroup);
-		if (UserGroup != null) {
+		String shipperDetails = (String)AppCacheUtils.getValue(Constants.USER_GROUP_SHIPPER+userGroup);
+		if(shipperDetails!=null && shipperDetails.contains(Constants.TILDE)) {
 			List<Filter> filters = searchCriteria.getFilters();
-			String shipperDetails = UserGroup.getShipper();
-			if (shipperDetails != null && shipperDetails.contains(Constants.TILDE)) {
-				filters.add(new Filter("moreShipper", shipperDetails));
-			} else if (shipperDetails != null && !shipperDetails.equalsIgnoreCase(Constants.All)) {
-				filters.add(new Filter("shipper", shipperDetails));
-			}
-
-			/*
-			 * Filter fromDateFilter = null; Filter toDateFilter = null; for (Filter Filter
-			 * : filters) { if (Filter!=null &&
-			 * Filter.getName().equalsIgnoreCase(Constants.SHIP_DATE_ATIB) &&
-			 * Filter.getName().equalsIgnoreCase(Constants.END_DATE)) { toDateFilter =
-			 * Filter; } if (Filter!=null &&
-			 * Filter.getName().equalsIgnoreCase(Constants.SHIP_DATE_ATIB) &&
-			 * Filter.getName().equalsIgnoreCase(Constants.START_DATE)) { fromDateFilter =
-			 * Filter; } }
-			 */
-
-			
-			Filter beforeDF = null;
-			Filter afterDF = null;
-			String before = UserGroup.getShipmentDateBefore();
-			String after = UserGroup.getShipmentDateAfter();
-			if (nullAndSizeCheck(before) || nullAndSizeCheck(after)) {
-				if (nullAndSizeCheck(before) && nullAndSizeCheck(after)) {
-					beforeDF = new Filter(Constants.SHIP_DATE_ATIB, after, Constants.START_DATE);
-					afterDF = new Filter(Constants.SHIP_DATE_ATIB, before, Constants.END_DATE);
-				} else if (nullAndSizeCheck(before)) {
-					beforeDF = new Filter(Constants.SHIP_DATE_ATIB, Constants.GLOBAL_START_DATE_TS,
-							Constants.START_DATE);
-					afterDF = new Filter(Constants.SHIP_DATE_ATIB, before, Constants.END_DATE);
-				} else if (nullAndSizeCheck(after)) {
-					beforeDF = new Filter(Constants.SHIP_DATE_ATIB, after, Constants.START_DATE);
-					afterDF = new Filter(Constants.SHIP_DATE_ATIB, Constants.GLOBAL_END_DATE_TS, Constants.END_DATE);
-				}
-				filters.add(beforeDF);
-				filters.add(afterDF);
-			}
-
+			filters.add(new Filter("moreShipper",shipperDetails));
+		}else if(shipperDetails!=null && !shipperDetails.equalsIgnoreCase(Constants.All)){
+			List<Filter> filters = searchCriteria.getFilters();
+			filters.add(new Filter("shipper",shipperDetails));
 		}
 		TrackTraceResponse TrackTraceResponse = search(searchCriteria);
 		logger.debug("Leaving from searchShipmentData");
 		return TrackTraceResponse;
-	}
-
-	private boolean nullAndSizeCheck(String after) {
-		if (after != null && after.length() > 0)
-			return true;
-		return false;
 	}
 
 	private ShipmentDataEntity copyShipmentDataToEntity(ShipmentDataDto shipmentData,
@@ -624,10 +553,10 @@ public class BusinessServiceImp implements BusinessService {
 		TrackTraceResponse response = null;
 		logger.debug(" Entering into saveUserGroup " + userGroup);
 		if (userGroup != null && userGroup.getId() != null) {
-			if (userGroup.getNoOfUserAttached() == null) {
+			if(userGroup.getNoOfUserAttached()==null) {
 				userGroup.setNoOfUserAttached(0);
 			}
-			if (userGroup.getStatus() == null) {
+			if(userGroup.getStatus()==null) {
 				userGroup.setStatus(Constants.ACTIVE);
 			}
 		} else if (userGroup != null) {
@@ -638,19 +567,6 @@ public class BusinessServiceImp implements BusinessService {
 		}
 		userGroup.setUpdatedAt(UtilityMethods.getCurrentDate());
 		userGroup.setUpdatedByValue(userUUID);
-		// startDate
-		String temVar = userGroup.getShipmentDateAfter();
-		userGroup.setShipmentDateAfter(userGroup.getShipmentDateBefore());
-		userGroup.setShipmentDateBefore(temVar);
-		
-		if (userGroup.getShipmentDateAfter() != null && userGroup.getShipmentDateAfter().length() > 0
-				&& !userGroup.getShipmentDateAfter().contains("T")) {
-			userGroup.setShipmentDateAfter(userGroup.getShipmentDateAfter() + Constants.START_TS);
-		}
-		if (userGroup.getShipmentDateBefore() != null && userGroup.getShipmentDateBefore().length() > 0
-				&& !userGroup.getShipmentDateBefore().contains("T")) {
-			userGroup.setShipmentDateBefore(userGroup.getShipmentDateBefore() + Constants.START_TS);
-		}
 		UserGroupRepository.save(userGroup);
 		response = new TrackTraceResponse(Constants.RESPONSE_CODE_200, Constants.RESULT_SAVEED_SUCCESSFULLY);
 		FtiHelper.refreshCache();
@@ -728,9 +644,9 @@ public class BusinessServiceImp implements BusinessService {
 		return response;
 	}
 
-	@Override
+    @Override
 	public TrackTraceResponse deleteUser(UserDataHolder userDataHolder, String userUUID) {
-		User User = null;
+    	User User = null;
 		TrackTraceResponse response = null;
 		if (userDataHolder != null && userDataHolder.getUserUUID() != null) {
 			User = userRepository.findByUuid(userDataHolder.getUserUUID());
@@ -738,7 +654,7 @@ public class BusinessServiceImp implements BusinessService {
 				User.setStatus(Constants.DELETED);
 				User.setUpdatedAt(UtilityMethods.getCurrentDate());
 				User.setUpdatedBy(userUUID);
-				userRepository.delete(User);				
+				userRepository.save(User);
 				response = new TrackTraceResponse(Constants.RESPONSE_CODE_200, Constants.RESULT_DELETED_SUCCESSFULLY);
 			} else {
 				response = new TrackTraceResponse(Constants.RESPONSE_CODE_500, Constants.RESULT_NOT_FOUND);
@@ -752,5 +668,6 @@ public class BusinessServiceImp implements BusinessService {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
+	
 }

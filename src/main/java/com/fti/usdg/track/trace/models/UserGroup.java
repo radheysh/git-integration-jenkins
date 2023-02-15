@@ -40,45 +40,11 @@ public class UserGroup {
 	private String status= null;	
 	private String shipper= null;	
 	
-
+	@JsonIgnore
 	private String createdByValue= null;	
 	@JsonIgnore
 	private String updatedByValue= null;	
 	
-	
-	private String shipmentDateBefore= null;	
-	private String shipmentDateAfter= null;	
-	
-	
-	
-	/**
-	 * @return the shipmentDateBefore
-	 */
-	public String getShipmentDateBefore() {
-		return shipmentDateBefore;
-	}
-
-	/**
-	 * @param shipmentDateBefore the shipmentDateBefore to set
-	 */
-	public void setShipmentDateBefore(String shipmentDateBefore) {
-		this.shipmentDateBefore = shipmentDateBefore;
-	}
-
-	/**
-	 * @return the shipmentDateAfter
-	 */
-	public String getShipmentDateAfter() {
-		return shipmentDateAfter;
-	}
-
-	/**
-	 * @param shipmentDateAfter the shipmentDateAfter to set
-	 */
-	public void setShipmentDateAfter(String shipmentDateAfter) {
-		this.shipmentDateAfter = shipmentDateAfter;
-	}
-
 	/**
 	 * @return the createdByValue
 	 */

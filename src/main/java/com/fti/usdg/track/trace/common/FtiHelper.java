@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import com.fti.usdg.track.trace.dto.SearchParameters;
 import com.fti.usdg.track.trace.dto.SearchResultWrapper;
-import com.fti.usdg.track.trace.models.ShipmentDataEntity;
 import com.fti.usdg.track.trace.models.UserGroup;
 import com.fti.usdg.track.trace.repository.UserGroupRepository;
 import com.fti.usdg.track.trace.dto.Filter;
@@ -30,21 +29,18 @@ import com.fti.usdg.track.trace.dto.Filter;
 public class FtiHelper {
 
 	private static final Logger logger = LoggerFactory.getLogger(FtiHelper.class);
-
+	
 	@Autowired
 	private UserGroupRepository UserGroupRepository = null;
-	@Autowired
-	private UtilityMethods UtilityMethods = null;
-
+	
 	public void refreshCache() {
-		List<UserGroup> ugList = UserGroupRepository.findByStatus(Constants.ACTIVE);
-		if (ugList != null && ugList.size() > 0) {
-			for (UserGroup UserGroup : ugList) {
-				AppCacheUtils.putValue(Constants.USER_GROUP_NAME + UserGroup.getGroupName(), UserGroup.getFeatureIds());
-				AppCacheUtils.putValue(Constants.USER_GROUP_OBJECT + UserGroup.getGroupName(), UserGroup);
-				if (UserGroup.getShipper() != null) {
-					AppCacheUtils.putValue(Constants.USER_GROUP_SHIPPER + UserGroup.getGroupName(),
-							UserGroup.getShipper());
+		List<UserGroup>  ugList = UserGroupRepository.findByStatus(Constants.ACTIVE);
+		if(ugList!=null && ugList.size()>0) {
+			for(UserGroup UserGroup : ugList) {
+				AppCacheUtils.putValue(Constants.USER_GROUP_NAME+UserGroup.getGroupName(), UserGroup.getFeatureIds());
+				AppCacheUtils.putValue(Constants.USER_GROUP_OBJECT+UserGroup.getGroupName(), UserGroup);
+				if(UserGroup.getShipper()!=null) {
+					AppCacheUtils.putValue(Constants.USER_GROUP_SHIPPER+UserGroup.getGroupName(), UserGroup.getShipper());
 				}
 			}
 		}
@@ -62,16 +58,10 @@ public class FtiHelper {
 			for (Filter Parameter : SearchCriteria.getFilters()) {
 				if (Parameter != null && Parameter.getType() != null) {
 					if (Parameter.getType().equalsIgnoreCase("START_DATE")) {
-						startDate = Parameter.getValue();
-						if(!startDate.contains("T")) {
-							startDate = Parameter.getValue() + Constants.START_TS;
-						}
+						startDate = Parameter.getValue() + Constants.START_TS;
 						name = Parameter.getName();
 					} else if (Parameter.getType() != null && Parameter.getType().equalsIgnoreCase("END_DATE")) {
-						endDate = Parameter.getValue();
-						if(!endDate.contains("T")) {
-							endDate = Parameter.getValue() + Constants.END_TS;
-						}
+						endDate = Parameter.getValue() + Constants.END_TS;
 					} else if (Parameter.getType() != null
 							&& Parameter.getType().equalsIgnoreCase(Constants.EXACT_MATCH)
 							&& Parameter.getName() != null && Parameter.getValue() != null
@@ -141,71 +131,12 @@ public class FtiHelper {
 		return predicates;
 	}
 
-	public TrackTraceResponse prepareShipdateResponse(List<UserGroup> resultList, Long totalCount) {
-		TrackTraceResponse TrackTraceResponse = null;
-		logger.debug(" Entering into prepareResponse " + totalCount);
-		List<SearchResultWrapper> seearchResult = null;
-		if (resultList != null && resultList.size() > 0) {
-			seearchResult = new ArrayList<SearchResultWrapper>();
-			for (UserGroup UserGroup : resultList) {
-				String tempBefore = UserGroup.getShipmentDateBefore();
-				UserGroup.setShipmentDateBefore(UserGroup.getShipmentDateAfter());
-				UserGroup.setShipmentDateAfter(tempBefore);
-			}
-			seearchResult.add(new SearchResultWrapper(totalCount, resultList));
-			TrackTraceResponse = new TrackTraceResponse(Constants.SUCCESS, Constants.RESULT_FOUND, seearchResult);
-		} else {
-			TrackTraceResponse = new TrackTraceResponse(Constants.RESPONSE_CODE_500, Constants.RESULT_NOT_FOUND);
-		}
-		logger.debug(" Entering into PriceManagerResponse " + TrackTraceResponse);
-		return TrackTraceResponse;
-	}
-	
-	
-	public TrackTraceResponse prepareDateFormatedResponse(List<ShipmentDataEntity> resultList, Long totalCount) {
-		TrackTraceResponse TrackTraceResponse = null;
-		logger.debug(" Entering into prepareResponse " + totalCount);
-		List<SearchResultWrapper> seearchResult = null;
-		if (resultList != null && resultList.size() > 0) {
-			seearchResult = new ArrayList<SearchResultWrapper>();
-			for (ShipmentDataEntity ShipmentDataEntity : resultList) {
-				ShipmentDataEntity.setShipDate(UtilityMethods.convertMMDDYYYY(ShipmentDataEntity.getShipDate()));
-				ShipmentDataEntity.setUpdatedDate(UtilityMethods.convertMMDDYYYY(ShipmentDataEntity.getUpdatedDate()));
-				ShipmentDataEntity.setCreatedDate(UtilityMethods.convertMMDDYYYY(ShipmentDataEntity.getCreatedDate()));
-			}
-			seearchResult.add(new SearchResultWrapper(totalCount, resultList));
-			TrackTraceResponse = new TrackTraceResponse(Constants.SUCCESS, Constants.RESULT_FOUND, seearchResult);
-		} else {
-			TrackTraceResponse = new TrackTraceResponse(Constants.RESPONSE_CODE_500, Constants.RESULT_NOT_FOUND);
-		}
-		logger.debug(" Entering into PriceManagerResponse " + TrackTraceResponse);
-		return TrackTraceResponse;
-	}
-
 	public TrackTraceResponse prepareResponse(List<?> resultList, Long totalCount) {
 		TrackTraceResponse TrackTraceResponse = null;
 		logger.debug(" Entering into prepareResponse " + totalCount);
 		List<SearchResultWrapper> seearchResult = null;
 		if (resultList != null && resultList.size() > 0) {
 			seearchResult = new ArrayList<SearchResultWrapper>();
-			seearchResult.add(new SearchResultWrapper(totalCount, resultList));
-			TrackTraceResponse = new TrackTraceResponse(Constants.SUCCESS, Constants.RESULT_FOUND, seearchResult);
-		} else {
-			TrackTraceResponse = new TrackTraceResponse(Constants.RESPONSE_CODE_500, Constants.RESULT_NOT_FOUND);
-		}
-		logger.debug(" Entering into PriceManagerResponse " + TrackTraceResponse);
-		return TrackTraceResponse;
-	}
-
-	public TrackTraceResponse prepareResponseShipment(List<ShipmentDataEntity> resultList, long totalCount) {
-		TrackTraceResponse TrackTraceResponse = null;
-		logger.debug(" Entering into prepareResponse " + totalCount);
-		List<SearchResultWrapper> seearchResult = null;
-		if (resultList != null && resultList.size() > 0) {
-			seearchResult = new ArrayList<SearchResultWrapper>();
-			for (ShipmentDataEntity ShipmentDataEntity : resultList) {
-				ShipmentDataEntity.setShipDate(UtilityMethods.convertMMDDYYYY(ShipmentDataEntity.getShipDate()));
-			}
 			seearchResult.add(new SearchResultWrapper(totalCount, resultList));
 			TrackTraceResponse = new TrackTraceResponse(Constants.SUCCESS, Constants.RESULT_FOUND, seearchResult);
 		} else {

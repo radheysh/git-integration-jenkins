@@ -9,7 +9,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.Formula;
-import org.springframework.data.annotation.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -24,7 +23,7 @@ public class User {
 	@NotBlank
 	@Size(max = 100)
 	private String username;
-
+	
 	@NotBlank
 	@Size(max = 100)
 	private String uuid;
@@ -43,6 +42,7 @@ public class User {
 		this.uuid = uuid;
 	}
 
+	
 	@NotBlank
 	@Size(max = 100)
 	@Email
@@ -62,32 +62,18 @@ public class User {
 	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> roles = new HashSet<>();
 
-	private String lastLogin;
-
-	/**
-	 * @return the lastLogin
-	 */
-	public String getLastLogin() {
-		return lastLogin;
-	}
-
-	/**
-	 * @param lastLogin the lastLogin to set
-	 */
-	public void setLastLogin(String lastLogin) {
-		this.lastLogin = lastLogin;
-	}
-
 	public User() {
 	}
-
-	public User(String username, String email, String password, String uuid, String groupName) {
+	
+	public User(String username, String email, String password, String uuid,String groupName) {
 		this.username = username;
 		this.email = email;
 		this.password = password;
-		this.groupName = groupName;
-		this.uuid = uuid;
+		this.groupName=groupName;
+		this.uuid=uuid;
 	}
+
+ 
 
 	public Long getId() {
 		return id;
@@ -158,13 +144,10 @@ public class User {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-
-	@Transient
-	@Formula("(SELECT ud.username FROM users ud WHERE ud.uuid = updated_by_value)")
+	
+    @Formula("(SELECT ud.username FROM users ud WHERE ud.uuid = updated_by)")
 	private String updatedBy = null;
-
-	private String updatedByValue = null;
-
+    
 	private String updatedAt = null;
 
 	/**
@@ -194,19 +177,4 @@ public class User {
 	public void setUpdatedAt(String updatedAt) {
 		this.updatedAt = updatedAt;
 	}
-
-	/**
-	 * @return the updatedByValue
-	 */
-	public String getUpdatedByValue() {
-		return updatedByValue;
-	}
-
-	/**
-	 * @param updatedByValue the updatedByValue to set
-	 */
-	public void setUpdatedByValue(String updatedByValue) {
-		this.updatedByValue = updatedByValue;
-	}
-
 }

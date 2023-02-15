@@ -67,9 +67,9 @@ public class FtiAuthorizationController {
 		User User = UserData.get();
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		UserGroup UserGroup = userGroupRepository.findByGroupName(User.getGroupName());
-		String jwt = jwtUtils.generateJwtToken(authentication, User.getUuid(), User.getGroupName()+Constants.HASH+UserGroup.getFeatureIds());
+		String jwt = jwtUtils.generateJwtToken(authentication, User.getUuid(), User.getGroupName()+Constants.HASH+UserGroup.getFeatureIds()+Constants.SWITCH_GROUP);
 		return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(),
-				userDetails.getEmail(), User.getUuid(), User.getGroupName(), roles,UserGroup.getFeatureIds(),User.getLastLogin()));
+				userDetails.getEmail(), User.getUuid(), User.getGroupName(), roles,UserGroup.getFeatureIds()));
 	}
 
 	@GetMapping("/health")

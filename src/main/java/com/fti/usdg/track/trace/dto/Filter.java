@@ -17,17 +17,6 @@ public class Filter {
 
 	}
 
-	
-	
-	public Filter(String name, String value,String type) {
-		super();
-		this.type = type;
-		this.name = name;
-		this.value = value;
-	}
-
-
-
 	public Filter(String name, String value) {
 		super();
 

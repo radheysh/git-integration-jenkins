@@ -9,35 +9,6 @@ public class UserDetailsDto {
 	private String username;
 	private String uuid;
 	private String status;
-	private String password;
-	private String newPassword;
-	
-	
-	
-	/**
-	 * @return the newPassword
-	 */
-	public String getNewPassword() {
-		return newPassword;
-	}
-	/**
-	 * @param newPassword the newPassword to set
-	 */
-	public void setNewPassword(String newPassword) {
-		this.newPassword = newPassword;
-	}
-	/**
-	 * @return the password
-	 */
-	public String getPassword() {
-		return password;
-	}
-	/**
-	 * @param password the password to set
-	 */
-	public void setPassword(String password) {
-		this.password = password;
-	}
 	/**
 	 * @return the status
 	 */

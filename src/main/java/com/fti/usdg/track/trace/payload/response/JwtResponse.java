@@ -13,7 +13,6 @@ public class JwtResponse {
 	private String groupName;
 	private String featureIds = null;
 	private String originalGroup = null;
-	private String lastLogin = null;
 	
 
 	private List<String> roles;
@@ -29,7 +28,7 @@ public class JwtResponse {
 	}
 
 	public JwtResponse(String accessToken, Long id, String username, String email, String uuid, String groupName,
-			List<String> roles,String featureIds, String lastLogin) {
+			List<String> roles,String featureIds) {
 		this.token = accessToken;
 		this.id = id;
 		this.username = username;
@@ -38,7 +37,6 @@ public class JwtResponse {
 		this.uuid = uuid;
 		this.groupName = groupName;
 		this.featureIds = featureIds;
-		this.lastLogin=lastLogin;
 	}
 
 	public JwtResponse(String accessToken, Long id, String username, String email, String uuid, String groupName,
@@ -55,21 +53,6 @@ public class JwtResponse {
 	}
 	
 	
-	
-	/**
-	 * @return the lastLogin
-	 */
-	public String getLastLogin() {
-		return lastLogin;
-	}
-
-	/**
-	 * @param lastLogin the lastLogin to set
-	 */
-	public void setLastLogin(String lastLogin) {
-		this.lastLogin = lastLogin;
-	}
-
 	/**
 	 * @return the originalGroup
 	 */

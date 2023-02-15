@@ -115,13 +115,6 @@ public class LoggedInUserGroup {
 	public void setFeatureIds(String featureIds) {
 		this.featureIds = featureIds;
 	}
-	@Override
-	public String toString() {
-		return "LoggedInUserGroup [loggedInGroup=" + loggedInGroup + ", targetGroup=" + targetGroup + ", featureIds="
-				+ featureIds + ", token=" + token + ", uuid=" + uuid + ", password=" + password + ", username="
-				+ username + ", switchback=" + switchback + "]";
-	}
 
-	
 	
 }

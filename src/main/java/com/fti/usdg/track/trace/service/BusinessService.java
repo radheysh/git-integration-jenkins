@@ -153,11 +153,4 @@ public interface BusinessService {
 	 */
 	public TrackTraceResponse changeLoggedInUserGroup(LoggedInUserGroup loggedInUserGroup, String userUUIDJwtToken);
 
-	/**
-	 * @param user
-	 * @param userUUIDJwtToken
-	 * @return
-	 */
-	public TrackTraceResponse changePassword(UserDetailsDto user, String userUUIDJwtToken);
-
 }

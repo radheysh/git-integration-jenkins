@@ -10,11 +10,11 @@ import java.io.File;
  *
  */
 public class Constants {
-	public static final String USER_HOME = System.getProperty("user.home") + File.separator;
+	public static final String USER_HOME = System.getProperty("user.home")+ File.separator ;
 	public static final String UUID_NOT_FOUND_IN_REQUEST = null;
 	public static final String JWT_TOKEN_KEY = "authorization";
 	public static final String SUCCESS = "SUCCESS";
-
+	
 	public static final String SHIPPER = "Shipper";
 	public static final String SHIP_DATE = "Ship Date";
 	public static final String UNIT_TRAIN_NO = "Unit Train No";
@@ -32,9 +32,9 @@ public class Constants {
 	public static final String COMMODITY_NAME = "Commodity Name";
 	public static final String ERAFLASH_D93B = "Eraflash D93B";
 	public static final String CRUDE_TYPE = "Crude Type";
-
-	public static final String DATE_FORMAT_1 = "dd-MMM-yyyy";
-	public static final Integer NO_OF_BLANK_LINES = 100;
+	 
+    public static final String DATE_FORMAT_1 = "dd-MMM-yyyy";
+    public static final Integer NO_OF_BLANK_LINES = 100;
 	public static final String No = "No";
 	public static final String RESPONSE_CODE_200 = "200";
 	public static final String RESPONSE_CODE_500 = "500";
@@ -50,7 +50,7 @@ public class Constants {
 	public static final String RESULT_DELETED_SUCCESSFULLY = "RESULT_DELETED_SUCCESSFULLY";
 	public static final String RECORD_DELETED = "RECORD_DELETED";
 	public static final String RESULT_NOT_FOUND = "RESULT_NOT_FOUND";
-	public static final String MANDATORY_PARAM_MISSING = "Mandatory parameters are missing or contains space.";
+	public static final String MANDATORY_PARAM_MISSING = "Mandatory parameters are missing.";
 	public static final String ADMIN = "Admin";
 	public static final String ERRONEOUS = "ERRONEOUS";
 	public static final String PROCCESSED = "PROCCESSED";
@@ -80,15 +80,7 @@ public class Constants {
 	public static final String ZERO = "0";
 	public static final String DEFAULT_PASSWORD = "Welcome@1";
 	public static final String USER_GROUP_SHIPPER = "USER_GROUP_SHIPPER_";
-	//public static final String SWITCH_GROUP = "~FT_ID_18";
+	public static final String SWITCH_GROUP = "~FT_ID_18";
 	public static final String SWITCH_BACK_FTID = "~FT_ID_20";
-	public static final String SHIPMENT_DATA_BOL_NO = "SHIPMENT_DATA_BOL_NO_";
-	public static final String SHIP_DATE_ATIB = "shipDate";
-	public static final String END_DATE = "END_DATE";
-	public static final String START_DATE = "START_DATE";
-	
-	public static final String GLOBAL_START_DATE_TS = "1990-12-12T00:00:01.665Z";
-	public static final String GLOBAL_END_DATE_TS = "9999-12-12T00:00:01.665Z";
-	
 
 }
